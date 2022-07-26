@@ -5,6 +5,7 @@ class state_node(object):
         self.state = 0
         self.desc = ''
         self.next = None
+        self.condition = None
         
 class word_table(object):
     '''存放词法分析数据
@@ -24,5 +25,9 @@ class word_table(object):
         :rtype: _type_
         '''
         print('words:',self.words)
-if __name__ == '__main__':
-    print('token')
+
+
+        
+        
+        
+    
