@@ -34,41 +34,105 @@ class NFAState(state):
             self.next[edge].append(follower)
         return True
 class StateUtils(object):
+    '''_summary_
+
+    :param object: _description_
+    :type object: _type_
+    '''
     def __init__(self) -> None:
         pass
     
     def create_dfa_state(self,label:str):
+        '''_summary_
+
+        :param label: _description_
+        :type label: str
+        :return: _description_
+        :rtype: _type_
+        '''
         node = DFAState()
         node.label = label
         return node
     
     def create_dfa_states(self,labels:[]):
+        '''_summary_
+
+        :param labels: _description_
+        :type labels: _type_
+        :return: _description_
+        :rtype: _type_
+        '''
         nodes = []
         for label in labels:
             nodes.append(self.create_dfa_state(label))
         return nodes
     
     def create_nfa_state(self,label:str):
+        '''_summary_
+
+        :param label: _description_
+        :type label: str
+        :return: _description_
+        :rtype: _type_
+        '''
         node = NFAState()
         node.label = label
         return node
     
     def create_nfa_states(self,labels:[]):
+        '''_summary_
+
+        :param labels: _description_
+        :type labels: _type_
+        :return: _description_
+        :rtype: _type_
+        '''
         nodes = []
         for label in labels:
             nodes.append(self.create_nfa_state(label))
         return nodes
     
     def append_follower(self,node:state, edge: str,follower:state):
+        '''_summary_
+
+        :param node: _description_
+        :type node: state
+        :param edge: _description_
+        :type edge: str
+        :param follower: _description_
+        :type follower: state
+        :return: _description_
+        :rtype: _type_
+        '''
         return node.append_follower(edge,follower)
     
     def append_followers(self,node:state,edge:str, followers:[]):
+        '''_summary_
+
+        :param node: _description_
+        :type node: state
+        :param edge: _description_
+        :type edge: str
+        :param followers: _description_
+        :type followers: _type_
+        :return: _description_
+        :rtype: _type_
+        '''
         flag = True
         for follower in followers:
             flag &= self.append_follower(node,edge,follower)
         return flag
     
     def edge(self, node:state, label:str) -> list:
+        '''_summary_
+
+        :param node: _description_
+        :type node: state
+        :param label: _description_
+        :type label: str
+        :return: _description_
+        :rtype: _type_
+        '''
         result = []
         followers = node.next.get(label)
         if followers is not None:
@@ -78,6 +142,15 @@ class StateUtils(object):
     
     
     def closure(self, S:[], label:str) -> set:
+        '''_summary_
+
+        :param S: _description_
+        :type S: _type_
+        :param label: _description_
+        :type label: str
+        :return: _description_
+        :rtype: _type_
+        '''
         T = set([])
         n_size = 0
         for s in S:
@@ -93,8 +166,17 @@ class StateUtils(object):
             else:
                 n_size = len(T)
         return T
-    
     def DFAedage(self, D:[],c:str) -> set:
+        '''_summary_
+
+        :param D: _description_
+        :type D: _type_
+        :param c: _description_
+        :type c: str
+        :return: _description_
+        :rtype: _type_
+        '''
+        
         T = self.closure(D,c)
         result = list(T)
         result = self.closure(result,'')
