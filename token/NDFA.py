@@ -18,7 +18,7 @@ class DFAState(state):
             self.next[edge] = [follower]
             return True
         else:
-            print("follower happen conflic!",self.next[edge][0],follower)
+            print("follower happen conflic!",self.next[edge][0].label,follower.label)
             return False
 
 class NFAState(state):
@@ -181,15 +181,74 @@ class StateUtils(object):
         result = list(T)
         result = self.closure(result,'')
         return result
+    def NFA2DFA(self,start_state:state,dict_:[]):
+        '''_summary_
+
+        :param start_state: _description_
+        :type start_state: DFAState
+        :param dict_: _description_
+        :type dict_: _type_
+        '''
+        
+        dfa_states = []
+        state1 = self.create_dfa_state('1')
+        state1.info = list(self.closure([start_state],''))
+        dfa_states.append(state1)
+        p = 1
+        j = 0
+        while(j < p):
+            for c in dict_:
+                tmp = self.DFAedage(dfa_states[j].info,c)
+                size = len(dfa_states)
+                flag = True
+                for i in range(size-1):
+                    if dfa_states[i].info == tmp:
+                        flag = False
+                        if not self.append_follower(dfa_states[j],c,dfa_states[i]):
+                            print('append conflict:',size-1,i)
+                if(flag):
+                    p = p + 1
+                    new_state = self.create_dfa_state(str(p))
+                    new_state.info = tmp
+                    self.append_follower(dfa_states[j],c,new_state)
+                    dfa_states.append(new_state)
+            j += 1
+        return dfa_states
+                        
+        
+        
 if __name__ == '__main__':
-    T = set([])
+    # T = set([])
     utils = StateUtils()
-    node = utils.create_dfa_state('s')
-    follower1 = utils.create_dfa_state("a")
-    follower2 = utils.create_dfa_state("b")
-    utils.append_follower(node,'a',follower1)
-    utils.append_follower(node,'b',follower2)
-    result = utils.closure([node],'a')
-    result = list(result)
-    for r in result:
-        print(r.label)
+    # node = utils.create_dfa_state('s')
+    # follower1 = utils.create_dfa_state("a")
+    # follower2 = utils.create_dfa_state("b")
+    # utils.append_follower(node,'a',follower1)
+    # utils.append_follower(node,'b',follower2)
+    # result = utils.closure([node],'a')
+    # result = list(result)
+    # for r in result:
+    #     print(r.label)
+    
+    # NFA2DFA test case
+    dict_ = ['x','y']
+    nfa_states = utils.create_nfa_states(['1','2','3','4','5','6','7'])
+    utils.append_follower(nfa_states[0],'x',nfa_states[4])
+    utils.append_follower(nfa_states[0],'',nfa_states[1])
+    utils.append_follower(nfa_states[1],'',nfa_states[2])
+    utils.append_follower(nfa_states[1],'y',nfa_states[5])
+    utils.append_follower(nfa_states[2],'',nfa_states[3])
+    utils.append_follower(nfa_states[3],'',nfa_states[0])
+    utils.append_follower(nfa_states[4],'',nfa_states[5])
+    utils.append_follower(nfa_states[4],'x',nfa_states[1])
+    utils.append_follower(nfa_states[5],'',nfa_states[6])
+    
+    dfa_states = utils.NFA2DFA(nfa_states[0],dict_=dict_)
+    print(len(dfa_states))
+    for dfa_state in dfa_states:
+        print(dfa_state.label,':')
+        for state in dfa_state.info:
+            print('label:   ',state.label)
+        for k in dfa_state.next.keys():
+            print('map:    ',k,len(dfa_state.next[k]),dfa_state.next[k][0].label)
+    
